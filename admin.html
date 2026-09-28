@@ -1,0 +1,3631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>KAT Restaurant | Admin Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --bg:#0c0c0b;
+    --panel:#151513;
+    --panel2:#1c1c19;
+    --panel3:#23231f;
+    --gold:#f4b942;
+    --gold2:#ffda83;
+    --text:#fffaf0;
+    --muted:#969289;
+    --line:#302f2a;
+    --green:#25d17f;
+    --red:#ff5b5b;
+    --blue:#5ca9ff;
+    --orange:#ff9f43;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"DM Sans",sans-serif;
+    min-height:100vh;
+}
+
+button,input,select,textarea{
+    font:inherit;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+/* ================= SPLASH ================= */
+
+#splash{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:#090908;
+    display:grid;
+    place-items:center;
+    transition:.7s;
+}
+
+.splash-content{
+    text-align:center;
+    animation:rise .8s ease;
+}
+
+.logo{
+    width:82px;
+    height:82px;
+    border:2px solid var(--gold);
+    border-radius:25px;
+    display:grid;
+    place-items:center;
+    margin:auto;
+    color:var(--gold);
+    font:800 38px "Playfair Display";
+    box-shadow:0 0 60px #f4b94225;
+    transform:rotate(-6deg);
+}
+
+.splash-title{
+    font:800 25px "Playfair Display";
+    margin-top:18px;
+}
+
+.splash-sub{
+    color:var(--gold);
+    font-size:10px;
+    letter-spacing:4px;
+    margin-top:7px;
+}
+
+.loader{
+    width:120px;
+    height:3px;
+    background:#292820;
+    border-radius:20px;
+    margin:24px auto 0;
+    overflow:hidden;
+}
+
+.loader:after{
+    content:"";
+    display:block;
+    width:40%;
+    height:100%;
+    background:var(--gold);
+    animation:load 1.2s infinite;
+}
+
+@keyframes load{
+    to{transform:translateX(250%)}
+}
+
+@keyframes rise{
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+/* ================= LAYOUT ================= */
+
+.app{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:250px;
+    background:#11110f;
+    border-right:1px solid var(--line);
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    z-index:50;
+    padding:22px 15px;
+    transition:.3s;
+}
+
+.main{
+    margin-left:250px;
+    width:calc(100% - 250px);
+    min-height:100vh;
+}
+
+.wrap{
+    max-width:1450px;
+    margin:auto;
+    padding:0 25px;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar-brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:5px 7px 25px;
+    border-bottom:1px solid var(--line);
+}
+
+.brand-icon{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    background:linear-gradient(145deg,#ffe39b,#d48a16);
+    color:#17130b;
+    display:grid;
+    place-items:center;
+    font-weight:900;
+    font-size:21px;
+}
+
+.brand-title{
+    font:700 16px "Playfair Display";
+}
+
+.brand-sub{
+    color:var(--gold);
+    font-size:8px;
+    letter-spacing:2px;
+    margin-top:3px;
+}
+
+.menu-title{
+    color:#656158;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:2px;
+    margin:25px 10px 9px;
+}
+
+.side-link{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 13px;
+    border-radius:12px;
+    color:#aaa69d;
+    background:transparent;
+    margin:4px 0;
+    text-align:left;
+    font-size:13px;
+    font-weight:700;
+    transition:.2s;
+}
+
+.side-link:hover{
+    background:#ffffff08;
+    color:white;
+}
+
+.side-link.active{
+    background:#f4b94218;
+    color:var(--gold);
+    border:1px solid #f4b94220;
+}
+
+.side-icon{
+    width:25px;
+    text-align:center;
+    font-size:17px;
+}
+
+.sidebar-bottom{
+    position:absolute;
+    bottom:20px;
+    left:15px;
+    right:15px;
+}
+
+.restaurant-status{
+    background:#191917;
+    border:1px solid var(--line);
+    border-radius:15px;
+    padding:14px;
+}
+
+.status-line{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:11px;
+}
+
+.status-dot{
+    width:7px;
+    height:7px;
+    background:var(--green);
+    border-radius:50%;
+    box-shadow:0 0 10px var(--green);
+    display:inline-block;
+    margin-right:5px;
+}
+
+.admin-name{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:9px;
+}
+
+/* ================= TOPBAR ================= */
+
+.topbar{
+    height:78px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:#0c0c0bea;
+    backdrop-filter:blur(18px);
+    position:sticky;
+    top:0;
+    z-index:30;
+}
+
+.top-left{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.mobile-menu{
+    display:none;
+    background:#ffffff0c;
+    color:white;
+    width:40px;
+    height:40px;
+    border-radius:11px;
+}
+
+.page-title{
+    font:700 25px "Playfair Display";
+}
+
+.page-date{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:3px;
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.icon-btn{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:#171714;
+    border:1px solid var(--line);
+    color:white;
+    position:relative;
+}
+
+.notification-dot{
+    position:absolute;
+    width:8px;
+    height:8px;
+    background:var(--red);
+    border-radius:50%;
+    right:8px;
+    top:7px;
+    box-shadow:0 0 10px var(--red);
+}
+
+.admin-avatar{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:linear-gradient(145deg,#ffe39b,#d48a16);
+    color:#17130b;
+    display:grid;
+    place-items:center;
+    font-weight:900;
+}
+
+/* ================= CONTENT ================= */
+
+.content{
+    padding:25px 0 60px;
+}
+
+.view{
+    display:none;
+    animation:pageIn .35s ease;
+}
+
+.view.active{
+    display:block;
+}
+
+@keyframes pageIn{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+/* ================= STAT CARDS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.stat-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    position:relative;
+    overflow:hidden;
+}
+
+.stat-card:after{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    right:-40px;
+    bottom:-50px;
+    background:#f4b94212;
+}
+
+.stat-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.stat-icon{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    background:#ffffff08;
+    font-size:18px;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:11px;
+    font-weight:600;
+}
+
+.stat-value{
+    font-size:28px;
+    font-weight:800;
+    margin-top:10px;
+}
+
+.stat-change{
+    font-size:10px;
+    margin-top:7px;
+    color:var(--green);
+}
+
+.stat-change.neutral{
+    color:var(--muted);
+}
+
+/* ================= GRID ================= */
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:1.45fr .8fr;
+    gap:18px;
+    margin-top:18px;
+}
+
+.panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:19px;
+    overflow:hidden;
+}
+
+.panel-head{
+    padding:18px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.panel-head h2{
+    font:700 18px "Playfair Display";
+}
+
+.panel-head p{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:3px;
+}
+
+.view-all{
+    color:var(--gold);
+    font-size:11px;
+    font-weight:800;
+    cursor:pointer;
+}
+
+/* ================= ORDERS ================= */
+
+.order-list{
+    padding:0 20px;
+}
+
+.order-row{
+    display:grid;
+    grid-template-columns:90px 1fr 120px 100px;
+    align-items:center;
+    gap:15px;
+    padding:17px 0;
+    border-bottom:1px solid #292822;
+}
+
+.order-row:last-child{
+    border-bottom:0;
+}
+
+.order-id{
+    color:var(--gold);
+    font-weight:800;
+    font-size:12px;
+}
+
+.order-customer{
+    font-size:13px;
+    font-weight:700;
+}
+
+.order-time{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:3px;
+}
+
+.order-amount{
+    font-weight:800;
+    font-size:13px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:7px 10px;
+    border-radius:20px;
+    font-size:9px;
+    font-weight:800;
+}
+
+.badge-new{
+    color:#5ca9ff;
+    background:#5ca9ff15;
+}
+
+.badge-preparing{
+    color:var(--orange);
+    background:#ff9f4315;
+}
+
+.badge-ready{
+    color:var(--green);
+    background:#25d17f15;
+}
+
+.badge-completed{
+    color:#aaa69d;
+    background:#ffffff0c;
+}
+
+.badge-cancelled{
+    color:var(--red);
+    background:#ff5b5b15;
+}
+
+/* ================= QUICK ACTION ================= */
+
+.quick-actions{
+    padding:18px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.quick-btn{
+    background:#1c1c19;
+    border:1px solid var(--line);
+    color:white;
+    border-radius:13px;
+    padding:15px 10px;
+    text-align:left;
+    transition:.2s;
+}
+
+.quick-btn:hover{
+    border-color:#f4b94250;
+    transform:translateY(-2px);
+}
+
+.quick-btn strong{
+    display:block;
+    font-size:12px;
+}
+
+.quick-btn span{
+    display:block;
+    color:var(--muted);
+    font-size:9px;
+    margin-top:5px;
+}
+
+/* ================= MENU MANAGEMENT ================= */
+
+.toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+}
+
+.toolbar-left{
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+}
+
+.search{
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:white;
+    outline:none;
+    padding:12px 14px;
+    border-radius:11px;
+    min-width:240px;
+}
+
+.select{
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:white;
+    padding:12px;
+    border-radius:11px;
+    outline:none;
+}
+
+.primary-btn{
+    background:var(--gold);
+    color:#17130b;
+    padding:12px 17px;
+    border-radius:11px;
+    font-weight:900;
+}
+
+.secondary-btn{
+    background:#ffffff08;
+    color:white;
+    border:1px solid var(--line);
+    padding:11px 14px;
+    border-radius:10px;
+    font-weight:700;
+}
+
+.menu-admin-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.menu-admin-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:17px;
+    overflow:hidden;
+}
+
+.menu-admin-img{
+    height:160px;
+    position:relative;
+}
+
+.menu-admin-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.stock-badge{
+    position:absolute;
+    top:10px;
+    right:10px;
+    padding:6px 9px;
+    border-radius:20px;
+    background:#151512e8;
+    font-size:9px;
+    font-weight:800;
+}
+
+.stock-badge.in{
+    color:var(--green);
+}
+
+.stock-badge.out{
+    color:var(--red);
+}
+
+.menu-admin-body{
+    padding:14px;
+}
+
+.menu-admin-body h3{
+    font-size:14px;
+}
+
+.menu-admin-body p{
+    color:var(--muted);
+    font-size:10px;
+    margin-top:4px;
+}
+
+.menu-price{
+    color:var(--gold);
+    font-weight:900;
+    margin-top:11px;
+}
+
+.menu-actions{
+    display:flex;
+    gap:7px;
+    margin-top:12px;
+}
+
+.menu-actions button{
+    flex:1;
+    padding:9px;
+    border-radius:9px;
+    font-size:10px;
+    font-weight:800;
+}
+
+.edit-btn{
+    background:#ffffff09;
+    border:1px solid var(--line);
+    color:white;
+}
+
+.delete-btn{
+    background:#ff5b5b12;
+    color:var(--red);
+}
+
+/* ================= ORDERS PAGE ================= */
+
+.order-filters{
+    display:flex;
+    gap:8px;
+    overflow:auto;
+    margin-bottom:18px;
+}
+
+.filter-btn{
+    flex:0 0 auto;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:#aaa69d;
+    padding:10px 15px;
+    border-radius:30px;
+    font-size:11px;
+    font-weight:800;
+}
+
+.filter-btn.active{
+    background:var(--gold);
+    color:#17130b;
+    border-color:var(--gold);
+}
+
+.orders-table{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    overflow:auto;
+}
+
+.table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:800px;
+}
+
+.table th{
+    text-align:left;
+    padding:14px 16px;
+    color:#77736b;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    border-bottom:1px solid var(--line);
+}
+
+.table td{
+    padding:16px;
+    border-bottom:1px solid #292822;
+    font-size:12px;
+}
+
+.table tr:last-child td{
+    border-bottom:0;
+}
+
+.table-customer{
+    font-weight:800;
+}
+
+.table-customer small{
+    display:block;
+    color:var(--muted);
+    margin-top:3px;
+    font-weight:400;
+}
+
+.status-select{
+    padding:7px 8px;
+    border-radius:8px;
+    background:#24241f;
+    color:white;
+    border:1px solid var(--line);
+    font-size:10px;
+}
+
+/* ================= ANALYTICS ================= */
+
+.analytics-grid{
+    display:grid;
+    grid-template-columns:1.5fr 1fr;
+    gap:18px;
+}
+
+.chart{
+    height:280px;
+    padding:25px 20px;
+    display:flex;
+    align-items:end;
+    gap:10px;
+}
+
+.bar-wrap{
+    flex:1;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:end;
+    align-items:center;
+    gap:8px;
+}
+
+.bar{
+    width:100%;
+    max-width:45px;
+    background:linear-gradient(to top,#a97012,var(--gold));
+    border-radius:8px 8px 3px 3px;
+    min-height:5px;
+    transition:.5s;
+}
+
+.bar-label{
+    color:var(--muted);
+    font-size:9px;
+}
+
+.bar-value{
+    color:#d7d2c8;
+    font-size:9px;
+}
+
+.top-items{
+    padding:5px 20px 15px;
+}
+
+.top-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 0;
+    border-bottom:1px solid #292822;
+}
+
+.top-item:last-child{
+    border:0;
+}
+
+.rank{
+    width:27px;
+    height:27px;
+    border-radius:9px;
+    background:#ffffff08;
+    display:grid;
+    place-items:center;
+    color:var(--gold);
+    font-weight:900;
+    font-size:11px;
+}
+
+.top-item-info{
+    flex:1;
+}
+
+.top-item-info b{
+    font-size:12px;
+}
+
+.top-item-info small{
+    display:block;
+    color:var(--muted);
+    margin-top:3px;
+}
+
+.top-item-price{
+    color:var(--gold);
+    font-weight:800;
+}
+
+/* ================= SETTINGS ================= */
+
+.settings-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+}
+
+.setting-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+}
+
+.setting-card h3{
+    font:700 18px "Playfair Display";
+    margin-bottom:5px;
+}
+
+.setting-card > p{
+    color:var(--muted);
+    font-size:10px;
+    margin-bottom:18px;
+}
+
+.field-group{
+    margin-bottom:14px;
+}
+
+.field-group label{
+    display:block;
+    color:#aaa69d;
+    font-size:10px;
+    margin-bottom:6px;
+}
+
+.field{
+    width:100%;
+    background:#0f0f0d;
+    color:white;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px;
+    outline:none;
+}
+
+.field:focus{
+    border-color:#f4b94270;
+}
+
+textarea.field{
+    min-height:90px;
+    resize:vertical;
+}
+
+.save-btn{
+    background:var(--gold);
+    color:#17130b;
+    padding:12px 18px;
+    border-radius:10px;
+    font-weight:900;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:#000c;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.hidden{
+    display:none;
+}
+
+.modal-box{
+    background:#191917;
+    border:1px solid var(--line);
+    border-radius:20px;
+    width:min(560px,100%);
+    max-height:90vh;
+    overflow:auto;
+    animation:modalIn .25s ease;
+}
+
+@keyframes modalIn{
+    from{
+        opacity:0;
+        transform:scale(.96) translateY(15px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.modal-head{
+    padding:18px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-head h2{
+    font:700 21px "Playfair Display";
+}
+
+.close{
+    width:34px;
+    height:34px;
+    background:#ffffff0b;
+    color:white;
+    border-radius:50%;
+}
+
+.modal-body{
+    padding:20px;
+}
+
+.modal-footer{
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+    padding:16px 20px;
+    border-top:1px solid var(--line);
+}
+
+/* ================= ORDER DETAIL ================= */
+
+.detail-item{
+    display:flex;
+    justify-content:space-between;
+    padding:11px 0;
+    border-bottom:1px solid var(--line);
+    font-size:12px;
+}
+
+.detail-item small{
+    color:var(--muted);
+}
+
+.detail-total{
+    display:flex;
+    justify-content:space-between;
+    padding:17px 0;
+    font-weight:900;
+    font-size:16px;
+}
+
+.order-actions{
+    display:flex;
+    gap:8px;
+    margin-top:15px;
+}
+
+.order-actions button{
+    flex:1;
+    padding:11px;
+    border-radius:10px;
+    font-weight:800;
+    font-size:11px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:35px;
+    transform:translateX(-50%);
+    background:#f7f0df;
+    color:#15130e;
+    padding:12px 19px;
+    border-radius:12px;
+    font-size:12px;
+    font-weight:900;
+    z-index:500;
+    box-shadow:0 15px 40px #0009;
+    animation:toastIn .25s ease;
+}
+
+.toast.hidden{
+    display:none;
+}
+
+@keyframes toastIn{
+    from{
+        opacity:0;
+        transform:translate(-50%,15px);
+    }
+    to{
+        opacity:1;
+        transform:translate(-50%,0);
+    }
+}
+
+/* ================= EMPTY ================= */
+
+.empty{
+    padding:50px 20px;
+    text-align:center;
+    color:var(--muted);
+}
+
+.empty-icon{
+    font-size:35px;
+    margin-bottom:10px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1050px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dashboard-grid,
+    .analytics-grid{
+        grid-template-columns:1fr;
+    }
+
+    .menu-admin-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+@media(max-width:800px){
+
+    .sidebar{
+        transform:translateX(-100%);
+    }
+
+    .sidebar.open{
+        transform:translateX(0);
+        box-shadow:20px 0 50px #000b;
+    }
+
+    .main{
+        margin-left:0;
+        width:100%;
+    }
+
+    .mobile-menu{
+        display:block;
+    }
+
+    .settings-grid{
+        grid-template-columns:1fr;
+    }
+
+    .order-row{
+        grid-template-columns:75px 1fr 80px;
+    }
+
+    .order-row > div:last-child{
+        display:none;
+    }
+
+    .wrap{
+        padding:0 15px;
+    }
+}
+
+@media(max-width:550px){
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+        gap:9px;
+    }
+
+    .stat-card{
+        padding:15px;
+    }
+
+    .stat-value{
+        font-size:22px;
+    }
+
+    .menu-admin-grid{
+        grid-template-columns:1fr 1fr;
+        gap:10px;
+    }
+
+    .menu-admin-img{
+        height:130px;
+    }
+
+    .page-title{
+        font-size:20px;
+    }
+
+    .top-actions .icon-btn{
+        display:none;
+    }
+
+    .search{
+        min-width:100%;
+    }
+}
+
+@media(max-width:390px){
+
+    .menu-admin-grid{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= SPLASH ================= -->
+
+<div id="splash">
+    <div class="splash-content">
+        <div class="logo">K</div>
+        <div class="splash-title">KAT ADMIN</div>
+        <div class="splash-sub">RESTAURANT DASHBOARD</div>
+        <div class="loader"></div>
+    </div>
+</div>
+
+<div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+        <div class="brand-icon">K</div>
+        <div>
+            <div class="brand-title">KAT Multicuisine</div>
+            <div class="brand-sub">ADMIN PANEL</div>
+        </div>
+    </div>
+
+    <div class="menu-title">MAIN MENU</div>
+
+    <button class="side-link active" onclick="showView('dashboard',this)">
+        <span class="side-icon">▦</span>
+        Dashboard
+    </button>
+
+    <button class="side-link" onclick="showView('orders',this)">
+        <span class="side-icon">🛍️</span>
+        Orders
+    </button>
+
+    <button class="side-link" onclick="showView('menu',this)">
+        <span class="side-icon">🍽️</span>
+        Menu
+    </button>
+
+    <button class="side-link" onclick="showView('analytics',this)">
+        <span class="side-icon">📊</span>
+        Analytics
+    </button>
+
+    <div class="menu-title">MANAGEMENT</div>
+
+    <button class="side-link" onclick="showView('settings',this)">
+        <span class="side-icon">⚙️</span>
+        Restaurant Settings
+    </button>
+
+    <button class="side-link" onclick="openRestaurant()">
+        <span class="side-icon">🌐</span>
+        View Website
+    </button>
+
+    <div class="sidebar-bottom">
+
+        <div class="restaurant-status">
+            <div class="status-line">
+                <span>
+                    <span class="status-dot"></span>
+                    Restaurant Online
+                </span>
+                <span>●</span>
+            </div>
+
+            <div class="admin-name">
+                KAT Multicuisine Restaurant<br>
+                Badvel, Andhra Pradesh
+            </div>
+        </div>
+
+    </div>
+
+</aside>
+
+<!-- ================= MAIN ================= -->
+
+<div class="main">
+
+<header class="topbar">
+
+    <div class="wrap" style="width:100%;display:flex;align-items:center;justify-content:space-between;">
+
+        <div class="top-left">
+
+            <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+
+            <div>
+                <div class="page-title" id="pageTitle">Dashboard</div>
+                <div class="page-date" id="currentDate"></div>
+            </div>
+
+        </div>
+
+        <div class="top-actions">
+
+            <button class="icon-btn" onclick="refreshDashboard()" title="Refresh">
+                ↻
+            </button>
+
+            <button class="icon-btn" onclick="showView('orders')">
+                🔔
+                <span class="notification-dot" id="notificationDot"></span>
+            </button>
+
+            <div class="admin-avatar">K</div>
+
+        </div>
+
+    </div>
+
+</header>
+
+<main class="content">
+
+<div class="wrap">
+
+<!-- ===================================================== -->
+<!-- DASHBOARD -->
+<!-- ===================================================== -->
+
+<section class="view active" id="dashboardView">
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">TODAY'S ORDERS</span>
+                <div class="stat-icon">🛍️</div>
+            </div>
+
+            <div class="stat-value" id="todayOrders">0</div>
+
+            <div class="stat-change">
+                ● Live order count
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">TODAY'S SALES</span>
+                <div class="stat-icon">₹</div>
+            </div>
+
+            <div class="stat-value" id="todaySales">₹0</div>
+
+            <div class="stat-change">
+                ● Calculated from orders
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">PENDING ORDERS</span>
+                <div class="stat-icon">⏳</div>
+            </div>
+
+            <div class="stat-value" id="pendingOrders">0</div>
+
+            <div class="stat-change neutral">
+                Waiting for action
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">MENU ITEMS</span>
+                <div class="stat-icon">🍽️</div>
+            </div>
+
+            <div class="stat-value" id="menuCount">0</div>
+
+            <div class="stat-change">
+                ● Items in menu
+            </div>
+        </div>
+
+    </div>
+
+    <div class="dashboard-grid">
+
+        <!-- RECENT ORDERS -->
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Recent Orders</h2>
+                    <p>Latest customer orders</p>
+                </div>
+
+                <span class="view-all" onclick="showView('orders')">
+                    View all →
+                </span>
+
+            </div>
+
+            <div class="order-list" id="recentOrders"></div>
+
+        </div>
+
+        <!-- QUICK ACTIONS -->
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Quick Actions</h2>
+                    <p>Manage your restaurant</p>
+                </div>
+
+            </div>
+
+            <div class="quick-actions">
+
+                <button class="quick-btn" onclick="openAddMenu()">
+                    <strong>➕ Add Menu Item</strong>
+                    <span>Create a new dish</span>
+                </button>
+
+                <button class="quick-btn" onclick="showView('orders')">
+                    <strong>🛍️ Manage Orders</strong>
+                    <span>Check incoming orders</span>
+                </button>
+
+                <button class="quick-btn" onclick="showView('analytics')">
+                    <strong>📊 View Sales</strong>
+                    <span>Check performance</span>
+                </button>
+
+                <button class="quick-btn" onclick="showView('settings')">
+                    <strong>⚙️ Settings</strong>
+                    <span>Restaurant information</span>
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- ORDERS -->
+<!-- ===================================================== -->
+
+<section class="view" id="ordersView">
+
+    <div class="toolbar">
+
+        <div>
+            <h2 style="font:700 25px 'Playfair Display'">Orders</h2>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">
+                Manage customer orders
+            </p>
+        </div>
+
+        <button class="secondary-btn" onclick="clearCompletedOrders()">
+            Clear Completed
+        </button>
+
+    </div>
+
+    <div class="order-filters">
+
+        <button class="filter-btn active" onclick="setOrderFilter('All',this)">
+            All
+        </button>
+
+        <button class="filter-btn" onclick="setOrderFilter('New',this)">
+            New
+        </button>
+
+        <button class="filter-btn" onclick="setOrderFilter('Preparing',this)">
+            Preparing
+        </button>
+
+        <button class="filter-btn" onclick="setOrderFilter('Ready',this)">
+            Ready
+        </button>
+
+        <button class="filter-btn" onclick="setOrderFilter('Completed',this)">
+            Completed
+        </button>
+
+        <button class="filter-btn" onclick="setOrderFilter('Cancelled',this)">
+            Cancelled
+        </button>
+
+    </div>
+
+    <div class="orders-table">
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="ordersTable"></tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- MENU -->
+<!-- ===================================================== -->
+
+<section class="view" id="menuView">
+
+    <div class="toolbar">
+
+        <div>
+            <h2 style="font:700 25px 'Playfair Display'">
+                Menu Management
+            </h2>
+
+            <p style="font-size:11px;color:var(--muted);margin-top:4px">
+                Add, edit and manage dishes
+            </p>
+        </div>
+
+        <button class="primary-btn" onclick="openAddMenu()">
+            + Add Menu Item
+        </button>
+
+    </div>
+
+    <div class="toolbar">
+
+        <div class="toolbar-left">
+
+            <input
+                class="search"
+                id="menuSearch"
+                placeholder="Search menu..."
+                oninput="renderAdminMenu()"
+            >
+
+            <select
+                class="select"
+                id="menuCategoryFilter"
+                onchange="renderAdminMenu()"
+            >
+                <option value="All">All Categories</option>
+                <option>Biryani</option>
+                <option>Starters</option>
+                <option>Rice</option>
+                <option>Noodles</option>
+                <option>Drinks</option>
+            </select>
+
+        </div>
+
+    </div>
+
+    <div class="menu-admin-grid" id="adminMenuGrid"></div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- ANALYTICS -->
+<!-- ===================================================== -->
+
+<section class="view" id="analyticsView">
+
+    <div style="margin-bottom:18px">
+        <h2 style="font:700 25px 'Playfair Display'">
+            Sales Analytics
+        </h2>
+
+        <p style="font-size:11px;color:var(--muted);margin-top:4px">
+            Simple restaurant performance overview
+        </p>
+    </div>
+
+    <div class="stats">
+
+        <div class="stat-card">
+            <span class="stat-label">TOTAL ORDERS</span>
+            <div class="stat-value" id="totalOrdersAnalytics">0</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">TOTAL REVENUE</span>
+            <div class="stat-value" id="totalRevenueAnalytics">₹0</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">AVERAGE ORDER</span>
+            <div class="stat-value" id="averageOrder">₹0</div>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">ACTIVE ITEMS</span>
+            <div class="stat-value" id="activeMenuAnalytics">0</div>
+        </div>
+
+    </div>
+
+    <div class="analytics-grid" style="margin-top:18px">
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Order Overview</h2>
+                    <p>Orders by recent activity</p>
+                </div>
+
+            </div>
+
+            <div class="chart" id="salesChart"></div>
+
+        </div>
+
+        <div class="panel">
+
+            <div class="panel-head">
+
+                <div>
+                    <h2>Popular Items</h2>
+                    <p>Based on current menu data</p>
+                </div>
+
+            </div>
+
+            <div class="top-items" id="topItems"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ===================================================== -->
+<!-- SETTINGS -->
+<!-- ===================================================== -->
+
+<section class="view" id="settingsView">
+
+    <div style="margin-bottom:18px">
+        <h2 style="font:700 25px 'Playfair Display'">
+            Restaurant Settings
+        </h2>
+
+        <p style="font-size:11px;color:var(--muted);margin-top:4px">
+            Update information displayed on your website
+        </p>
+    </div>
+
+    <div class="settings-grid">
+
+        <div class="setting-card">
+
+            <h3>Restaurant Information</h3>
+
+            <p>Basic restaurant details</p>
+
+            <div class="field-group">
+                <label>Restaurant Name</label>
+                <input
+                    class="field"
+                    id="settingName"
+                    value="KAT MULTICUSINE RESTAURENT"
+                >
+            </div>
+
+            <div class="field-group">
+                <label>Main Phone</label>
+                <input
+                    class="field"
+                    id="settingPhone"
+                    value="9966111471"
+                >
+            </div>
+
+            <div class="field-group">
+                <label>Alternate Phone</label>
+                <input
+                    class="field"
+                    id="settingAltPhone"
+                    value="8328238863"
+                >
+            </div>
+
+            <div class="field-group">
+                <label>Address</label>
+
+                <textarea
+                    class="field"
+                    id="settingAddress"
+                >Nellore Road, opposite Ayyappaswamy Temple, beside Sivalayam Arch, Badvel</textarea>
+
+            </div>
+
+            <button class="save-btn" onclick="saveSettings()">
+                Save Information
+            </button>
+
+        </div>
+
+
+        <div class="setting-card">
+
+            <h3>Order Settings</h3>
+
+            <p>Configure basic order behaviour</p>
+
+            <div class="field-group">
+
+                <label>WhatsApp Number</label>
+
+                <input
+                    class="field"
+                    id="settingWhatsapp"
+                    value="919966111471"
+                >
+
+            </div>
+
+            <div class="field-group">
+
+                <label>Default Order Type</label>
+
+                <select class="field" id="settingOrderType">
+
+                    <option>Takeaway / Pickup</option>
+
+                    <option>
+                        Restaurant delivery (confirm availability)
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="field-group">
+
+                <label>Order Notice</label>
+
+                <textarea
+                    class="field"
+                    id="settingNotice"
+                >Please confirm order availability with the restaurant.</textarea>
+
+            </div>
+
+            <button class="save-btn" onclick="saveSettings()">
+                Save Settings
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+</main>
+
+</div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ADD / EDIT MENU MODAL -->
+<!-- ===================================================== -->
+
+<div class="modal hidden" id="menuModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2 id="menuModalTitle">
+                Add Menu Item
+            </h2>
+
+            <button class="close" onclick="closeMenuModal()">
+                ✕
+            </button>
+
+        </div>
+
+        <form id="menuForm">
+
+            <div class="modal-body">
+
+                <input type="hidden" id="editMenuId">
+
+                <div class="field-group">
+
+                    <label>Dish Name</label>
+
+                    <input
+                        class="field"
+                        id="menuName"
+                        required
+                        placeholder="Example: Chicken Biryani"
+                    >
+
+                </div>
+
+                <div class="field-group">
+
+                    <label>Category</label>
+
+                    <select
+                        class="field"
+                        id="menuCategory"
+                        required
+                    >
+
+                        <option>Biryani</option>
+                        <option>Starters</option>
+                        <option>Rice</option>
+                        <option>Noodles</option>
+                        <option>Drinks</option>
+
+                    </select>
+
+                </div>
+
+                <div class="field-group">
+
+                    <label>Price (₹)</label>
+
+                    <input
+                        class="field"
+                        id="menuPrice"
+                        required
+                        type="number"
+                        min="1"
+                        placeholder="180"
+                    >
+
+                </div>
+
+                <div class="field-group">
+
+                    <label>Description</label>
+
+                    <textarea
+                        class="field"
+                        id="menuDescription"
+                        placeholder="Short description"
+                    ></textarea>
+
+                </div>
+
+                <div class="field-group">
+
+                    <label>Food Image URL</label>
+
+                    <input
+                        class="field"
+                        id="menuImage"
+                        placeholder="https://..."
+                    >
+
+                </div>
+
+                <div class="field-group">
+
+                    <label>Tag</label>
+
+                    <input
+                        class="field"
+                        id="menuTag"
+                        placeholder="Popular / Veg / Chef's Pick"
+                    >
+
+                </div>
+
+                <div class="field-group">
+
+                    <label>Availability</label>
+
+                    <select
+                        class="field"
+                        id="menuStock"
+                    >
+
+                        <option value="true">
+                            Available
+                        </option>
+
+                        <option value="false">
+                            Out of Stock
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="closeMenuModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Save Item
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ORDER DETAIL MODAL -->
+<!-- ===================================================== -->
+
+<div class="modal hidden" id="orderModal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2>
+                Order <span class="gold" id="detailOrderId"></span>
+            </h2>
+
+            <button class="close" onclick="closeOrderModal()">
+                ✕
+            </button>
+
+        </div>
+
+        <div class="modal-body" id="orderDetail"></div>
+
+    </div>
+
+</div>
+
+
+<div class="toast hidden" id="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   KAT RESTAURANT ADMIN
+   LOCAL STORAGE DATABASE
+========================================================= */
+
+const DEFAULT_MENU = [
+
+{
+    id:1,
+    name:"Chicken Dum Biryani",
+    category:"Biryani",
+    price:180,
+    tag:"Popular",
+    stock:true,
+    description:"Aromatic dum biryani with tender chicken.",
+    img:"https://images.unsplash.com/photo-1563379091339-03246963d96c?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:2,
+    name:"Chicken 65",
+    category:"Starters",
+    price:170,
+    tag:"Chef's Pick",
+    stock:true,
+    description:"Crispy, spicy and full of flavour.",
+    img:"https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:3,
+    name:"Veg Fried Rice",
+    category:"Rice",
+    price:150,
+    tag:"Veg",
+    stock:true,
+    description:"Wok-tossed rice with fresh vegetables.",
+    img:"https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:4,
+    name:"Chicken Fried Rice",
+    category:"Rice",
+    price:180,
+    tag:"Popular",
+    stock:true,
+    description:"Classic fried rice with chicken.",
+    img:"https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:5,
+    name:"Chicken Noodles",
+    category:"Noodles",
+    price:160,
+    tag:"Favourite",
+    stock:true,
+    description:"Street-style noodles with chicken.",
+    img:"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:6,
+    name:"Veg Noodles",
+    category:"Noodles",
+    price:140,
+    tag:"Veg",
+    stock:true,
+    description:"Tossed noodles with crunchy vegetables.",
+    img:"https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:7,
+    name:"Chicken Manchurian",
+    category:"Starters",
+    price:190,
+    tag:"Spicy",
+    stock:true,
+    description:"Saucy Indo-Chinese chicken bites.",
+    img:"https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:8,
+    name:"Gobi Manchurian",
+    category:"Starters",
+    price:150,
+    tag:"Veg",
+    stock:true,
+    description:"Crispy cauliflower tossed in sauce.",
+    img:"https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:9,
+    name:"Egg Fried Rice",
+    category:"Rice",
+    price:160,
+    tag:"Classic",
+    stock:true,
+    description:"Wok-fried rice with egg.",
+    img:"https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:10,
+    name:"Paneer Biryani",
+    category:"Biryani",
+    price:170,
+    tag:"Veg",
+    stock:true,
+    description:"Fragrant rice with paneer and spices.",
+    img:"https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:11,
+    name:"Chicken Lollipop",
+    category:"Starters",
+    price:200,
+    tag:"Crispy",
+    stock:true,
+    description:"Crispy chicken lollipop starter.",
+    img:"https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=700&q=85"
+},
+
+{
+    id:12,
+    name:"Cool Drinks",
+    category:"Drinks",
+    price:40,
+    tag:"Chilled",
+    stock:true,
+    description:"Ask for available cold drinks.",
+    img:"https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=700&q=85"
+}
+
+];
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let menu = JSON.parse(
+    localStorage.getItem("katAdminMenu")
+) || DEFAULT_MENU;
+
+let orders = JSON.parse(
+    localStorage.getItem("katOrders")
+) || [];
+
+let orderFilter = "All";
+
+let editingMenuId = null;
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+    document.getElementById("currentDate").textContent =
+        new Date().toLocaleDateString("en-IN",{
+            weekday:"long",
+            day:"numeric",
+            month:"long",
+            year:"numeric"
+        });
+
+    renderEverything();
+
+    setTimeout(()=>{
+
+        const splash=document.getElementById("splash");
+
+        splash.style.opacity="0";
+
+        setTimeout(()=>{
+            splash.remove();
+        },700);
+
+    },1300);
+
+});
+
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+function saveMenu(){
+
+    localStorage.setItem(
+        "katAdminMenu",
+        JSON.stringify(menu)
+    );
+
+}
+
+function saveOrders(){
+
+    localStorage.setItem(
+        "katOrders",
+        JSON.stringify(orders)
+    );
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showView(view,button){
+
+    document.querySelectorAll(".view")
+        .forEach(v=>v.classList.remove("active"));
+
+    const target=document.getElementById(
+        view+"View"
+    );
+
+    if(target){
+        target.classList.add("active");
+    }
+
+    document.querySelectorAll(".side-link")
+        .forEach(b=>b.classList.remove("active"));
+
+    if(button){
+        button.classList.add("active");
+    }else{
+
+        const links=document.querySelectorAll(".side-link");
+
+        links.forEach(link=>{
+
+            if(
+                link.textContent
+                    .toLowerCase()
+                    .includes(view)
+            ){
+                link.classList.add("active");
+            }
+
+        });
+
+    }
+
+    const titles={
+        dashboard:"Dashboard",
+        orders:"Orders",
+        menu:"Menu Management",
+        analytics:"Analytics",
+        settings:"Restaurant Settings"
+    };
+
+    document.getElementById("pageTitle").textContent =
+        titles[view] || "Dashboard";
+
+    document.getElementById("sidebar")
+        .classList.remove("open");
+
+    if(view==="analytics"){
+        renderAnalytics();
+    }
+
+    if(view==="orders"){
+        renderOrders();
+    }
+
+    if(view==="menu"){
+        renderAdminMenu();
+    }
+
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+function toggleSidebar(){
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+}
+
+function openRestaurant(){
+
+    window.open(
+        "index.html",
+        "_blank"
+    );
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function renderDashboard(){
+
+    const today=new Date()
+        .toISOString()
+        .slice(0,10);
+
+    const todayOrders=orders.filter(o=>
+        o.date===today
+    );
+
+    const todaySales=todayOrders.reduce(
+        (sum,o)=>sum+Number(o.total||0),
+        0
+    );
+
+    const pending=orders.filter(o=>
+        ["New","Preparing","Ready"].includes(o.status)
+    ).length;
+
+    document.getElementById("todayOrders")
+        .textContent=todayOrders.length;
+
+    document.getElementById("todaySales")
+        .textContent="₹"+todaySales;
+
+    document.getElementById("pendingOrders")
+        .textContent=pending;
+
+    document.getElementById("menuCount")
+        .textContent=menu.length;
+
+    const recent=document.getElementById(
+        "recentOrders"
+    );
+
+    const latest=[...orders]
+        .reverse()
+        .slice(0,6);
+
+    if(!latest.length){
+
+        recent.innerHTML=`
+            <div class="empty">
+                <div class="empty-icon">🛍️</div>
+                No orders yet
+            </div>
+        `;
+
+        return;
+    }
+
+    recent.innerHTML=latest.map(o=>`
+
+        <div class="order-row">
+
+            <div>
+                <div class="order-id">
+                    #${o.id}
+                </div>
+
+                <div class="order-time">
+                    ${o.time}
+                </div>
+            </div>
+
+            <div>
+                <div class="order-customer">
+                    ${escapeHTML(o.customer)}
+                </div>
+
+                <div class="order-time">
+                    ${o.items.length} item(s)
+                </div>
+            </div>
+
+            <div class="order-amount">
+                ₹${o.total}
+            </div>
+
+            <div>
+                ${statusBadge(o.status)}
+            </div>
+
+        </div>
+
+    `).join("");
+
+}
+
+
+/* =========================================================
+   ORDERS
+========================================================= */
+
+function setOrderFilter(filter,button){
+
+    orderFilter=filter;
+
+    document.querySelectorAll(".filter-btn")
+        .forEach(b=>b.classList.remove("active"));
+
+    button.classList.add("active");
+
+    renderOrders();
+
+}
+
+
+function renderOrders(){
+
+    const tbody=document.getElementById(
+        "ordersTable"
+    );
+
+    let list=[...orders].reverse();
+
+    if(orderFilter!=="All"){
+
+        list=list.filter(
+            o=>o.status===orderFilter
+        );
+
+    }
+
+    if(!list.length){
+
+        tbody.innerHTML=`
+            <tr>
+                <td colspan="6">
+                    <div class="empty">
+                        <div class="empty-icon">🛍️</div>
+                        No ${orderFilter==="All"?"":orderFilter.toLowerCase()+" "}orders found
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    tbody.innerHTML=list.map(o=>`
+
+        <tr>
+
+            <td>
+                <b style="color:var(--gold)">
+                    #${o.id}
+                </b>
+
+                <small style="display:block;color:var(--muted);margin-top:4px">
+                    ${o.time}
+                </small>
+            </td>
+
+            <td>
+
+                <div class="table-customer">
+                    ${escapeHTML(o.customer)}
+                </div>
+
+                <small>
+                    ${escapeHTML(o.phone)}
+                </small>
+
+            </td>
+
+            <td>
+
+                ${o.items.slice(0,2).map(
+                    i=>`${escapeHTML(i.name)} × ${i.qty}`
+                ).join("<br>")}
+
+                ${o.items.length>2
+                    ?`<small style="color:var(--muted)"> +${o.items.length-2} more</small>`
+                    :""
+                }
+
+            </td>
+
+            <td>
+                <b>₹${o.total}</b>
+            </td>
+
+            <td>
+
+                <select
+                    class="status-select"
+                    onchange="changeOrderStatus('${o.id}',this.value)"
+                >
+
+                    ${["New","Preparing","Ready","Completed","Cancelled"]
+                        .map(s=>`
+                            <option
+                                ${o.status===s?"selected":""}
+                            >
+                                ${s}
+                            </option>
+                        `).join("")
+                    }
+
+                </select>
+
+            </td>
+
+            <td>
+
+                <button
+                    class="secondary-btn"
+                    style="padding:8px 11px;font-size:10px"
+                    onclick="viewOrder('${o.id}')"
+                >
+                    View
+                </button>
+
+            </td>
+
+        </tr>
+
+    `).join("");
+
+}
+
+
+function statusBadge(status){
+
+    const classes={
+        New:"badge-new",
+        Preparing:"badge-preparing",
+        Ready:"badge-ready",
+        Completed:"badge-completed",
+        Cancelled:"badge-cancelled"
+    };
+
+    return `
+        <span class="badge ${classes[status]||"badge-completed"}">
+            ${status}
+        </span>
+    `;
+
+}
+
+
+function changeOrderStatus(id,status){
+
+    const order=orders.find(o=>o.id===id);
+
+    if(!order)return;
+
+    order.status=status;
+
+    saveOrders();
+
+    renderEverything();
+
+    toast(
+        `Order #${id} marked ${status}`
+    );
+
+}
+
+
+function viewOrder(id){
+
+    const order=orders.find(
+        o=>o.id===id
+    );
+
+    if(!order)return;
+
+    document.getElementById(
+        "detailOrderId"
+    ).textContent="#"+order.id;
+
+    document.getElementById(
+        "orderDetail"
+    ).innerHTML=`
+
+        <div style="margin-bottom:18px">
+
+            <b>${escapeHTML(order.customer)}</b>
+
+            <div style="color:var(--muted);font-size:11px;margin-top:5px">
+                📞 ${escapeHTML(order.phone)}
+            </div>
+
+            <div style="color:var(--muted);font-size:11px;margin-top:4px">
+                🕐 ${order.time}
+            </div>
+
+        </div>
+
+        ${order.items.map(item=>`
+
+            <div class="detail-item">
+
+                <span>
+                    ${escapeHTML(item.name)}
+                    <small> × ${item.qty}</small>
+                </span>
+
+                <b>₹${item.price*item.qty}</b>
+
+            </div>
+
+        `).join("")}
+
+        <div class="detail-total">
+
+            <span>Total</span>
+
+            <span class="gold">
+                ₹${order.total}
+            </span>
+
+        </div>
+
+        <div style="
+            color:var(--muted);
+            font-size:11px;
+            line-height:1.7;
+        ">
+
+            <b style="color:white">Order Type:</b>
+            ${escapeHTML(order.orderType || "Not specified")}
+            <br>
+
+            <b style="color:white">Address / Note:</b>
+            ${escapeHTML(order.address || "Not provided")}
+            <br>
+
+            <b style="color:white">Payment:</b>
+            ${escapeHTML(order.payment || "Not specified")}
+
+        </div>
+
+        <div class="order-actions">
+
+            <button
+                style="background:var(--gold);color:#17130b"
+                onclick="advanceOrder('${order.id}')"
+            >
+                Move to Next Status →
+            </button>
+
+            <button
+                style="background:#ffffff08;color:white"
+                onclick="openWhatsApp('${order.phone}')"
+            >
+                WhatsApp
+            </button>
+
+        </div>
+
+    `;
+
+    document.getElementById(
+        "orderModal"
+    ).classList.remove("hidden");
+
+}
+
+
+function advanceOrder(id){
+
+    const order=orders.find(
+        o=>o.id===id
+    );
+
+    if(!order)return;
+
+    const flow=[
+        "New",
+        "Preparing",
+        "Ready",
+        "Completed"
+    ];
+
+    const current=flow.indexOf(
+        order.status
+    );
+
+    if(current<flow.length-1){
+
+        order.status=
+            flow[current+1];
+
+        saveOrders();
+
+        renderEverything();
+
+        viewOrder(id);
+
+        toast(
+            `Order moved to ${order.status}`
+        );
+
+    }else{
+
+        toast("Order already completed");
+
+    }
+
+}
+
+
+function closeOrderModal(){
+
+    document.getElementById(
+        "orderModal"
+    ).classList.add("hidden");
+
+}
+
+
+function clearCompletedOrders(){
+
+    const completed=orders.filter(
+        o=>o.status==="Completed"
+    ).length;
+
+    if(!completed){
+
+        toast("No completed orders to clear");
+
+        return;
+    }
+
+    if(!confirm(
+        `Delete ${completed} completed order(s)?`
+    ))return;
+
+    orders=orders.filter(
+        o=>o.status!=="Completed"
+    );
+
+    saveOrders();
+
+    renderEverything();
+
+    toast("Completed orders cleared");
+
+}
+
+
+/* =========================================================
+   MENU MANAGEMENT
+========================================================= */
+
+function renderAdminMenu(){
+
+    const grid=document.getElementById(
+        "adminMenuGrid"
+    );
+
+    const search=(
+        document.getElementById("menuSearch")?.value || ""
+    ).toLowerCase();
+
+    const cat=
+        document.getElementById(
+            "menuCategoryFilter"
+        )?.value || "All";
+
+    const list=menu.filter(item=>{
+
+        const matchesSearch=
+            item.name.toLowerCase().includes(search);
+
+        const matchesCategory=
+            cat==="All" ||
+            item.category===cat;
+
+        return matchesSearch && matchesCategory;
+
+    });
+
+    if(!list.length){
+
+        grid.innerHTML=`
+            <div class="empty" style="grid-column:1/-1">
+                <div class="empty-icon">🍽️</div>
+                No menu items found
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML=list.map(item=>`
+
+        <article class="menu-admin-card">
+
+            <div class="menu-admin-img">
+
+                <img
+                    src="${escapeAttribute(item.img)}"
+                    alt="${escapeAttribute(item.name)}"
+                    onerror="this.src='https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=80'"
+                >
+
+                <span class="stock-badge ${item.stock?"in":"out"}">
+
+                    ${item.stock
+                        ?"● Available"
+                        :"● Out of Stock"
+                    }
+
+                </span>
+
+            </div>
+
+            <div class="menu-admin-body">
+
+                <h3>
+                    ${escapeHTML(item.name)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(item.category)}
+                    ·
+                    ${escapeHTML(item.tag || "")}
+                </p>
+
+                <div class="menu-price">
+                    ₹${item.price}
+                </div>
+
+                <div class="menu-actions">
+
+                    <button
+                        class="edit-btn"
+                        onclick="editMenu(${item.id})"
+                    >
+                        ✏️ Edit
+                    </button>
+
+                    <button
+                        class="edit-btn"
+                        onclick="toggleStock(${item.id})"
+                    >
+                        ${item.stock
+                            ?"Out Stock"
+                            :"Available"
+                        }
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteMenu(${item.id})"
+                    >
+                        🗑️
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    `).join("");
+
+}
+
+
+function openAddMenu(){
+
+    editingMenuId=null;
+
+    document.getElementById(
+        "menuModalTitle"
+    ).textContent="Add Menu Item";
+
+    document.getElementById(
+        "menuForm"
+    ).reset();
+
+    document.getElementById(
+        "editMenuId"
+    ).value="";
+
+    document.getElementById(
+        "menuStock"
+    ).value="true";
+
+    document.getElementById(
+        "menuModal"
+    ).classList.remove("hidden");
+
+}
+
+
+function editMenu(id){
+
+    const item=menu.find(
+        m=>m.id===id
+    );
+
+    if(!item)return;
+
+    editingMenuId=id;
+
+    document.getElementById(
+        "menuModalTitle"
+    ).textContent="Edit Menu Item";
+
+    document.getElementById(
+        "editMenuId"
+    ).value=id;
+
+    document.getElementById(
+        "menuName"
+    ).value=item.name;
+
+    document.getElementById(
+        "menuCategory"
+    ).value=item.category;
+
+    document.getElementById(
+        "menuPrice"
+    ).value=item.price;
+
+    document.getElementById(
+        "menuDescription"
+    ).value=item.description || "";
+
+    document.getElementById(
+        "menuImage"
+    ).value=item.img || "";
+
+    document.getElementById(
+        "menuTag"
+    ).value=item.tag || "";
+
+    document.getElementById(
+        "menuStock"
+    ).value=String(item.stock);
+
+    document.getElementById(
+        "menuModal"
+    ).classList.remove("hidden");
+
+}
+
+
+function closeMenuModal(){
+
+    document.getElementById(
+        "menuModal"
+    ).classList.add("hidden");
+
+}
+
+
+document.getElementById(
+    "menuForm"
+).addEventListener("submit",function(e){
+
+    e.preventDefault();
+
+    const data={
+
+        name:document.getElementById(
+            "menuName"
+        ).value.trim(),
+
+        category:document.getElementById(
+            "menuCategory"
+        ).value,
+
+        price:Number(
+            document.getElementById(
+                "menuPrice"
+            ).value
+        ),
+
+        description:document.getElementById(
+            "menuDescription"
+        ).value.trim(),
+
+        img:document.getElementById(
+            "menuImage"
+        ).value.trim() ||
+        "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=700&q=80",
+
+        tag:document.getElementById(
+            "menuTag"
+        ).value.trim() || "KAT Special",
+
+        stock:
+            document.getElementById(
+                "menuStock"
+            ).value==="true"
+
+    };
+
+
+    if(editingMenuId){
+
+        const index=menu.findIndex(
+            m=>m.id===editingMenuId
+        );
+
+        if(index!==-1){
+
+            menu[index]={
+                ...menu[index],
+                ...data
+            };
+
+        }
+
+        toast("Menu item updated ✓");
+
+    }else{
+
+        menu.push({
+
+            id:Date.now(),
+
+            ...data
+
+        });
+
+        toast("New menu item added ✓");
+
+    }
+
+    saveMenu();
+
+    closeMenuModal();
+
+    renderEverything();
+
+});
+
+
+function deleteMenu(id){
+
+    const item=menu.find(
+        m=>m.id===id
+    );
+
+    if(!item)return;
+
+    if(!confirm(
+        `Delete "${item.name}" from menu?`
+    ))return;
+
+    menu=menu.filter(
+        m=>m.id!==id
+    );
+
+    saveMenu();
+
+    renderEverything();
+
+    toast("Menu item deleted");
+
+}
+
+
+function toggleStock(id){
+
+    const item=menu.find(
+        m=>m.id===id
+    );
+
+    if(!item)return;
+
+    item.stock=!item.stock;
+
+    saveMenu();
+
+    renderEverything();
+
+    toast(
+        item.stock
+        ?"Item marked Available ✓"
+        :"Item marked Out of Stock"
+    );
+
+}
+
+
+/* =========================================================
+   ANALYTICS
+========================================================= */
+
+function renderAnalytics(){
+
+    const totalOrders=orders.length;
+
+    const revenue=orders
+        .filter(o=>o.status!=="Cancelled")
+        .reduce(
+            (sum,o)=>sum+Number(o.total||0),
+            0
+        );
+
+    const average=
+        totalOrders
+        ?Math.round(revenue/totalOrders)
+        :0;
+
+    document.getElementById(
+        "totalOrdersAnalytics"
+    ).textContent=totalOrders;
+
+    document.getElementById(
+        "totalRevenueAnalytics"
+    ).textContent="₹"+revenue;
+
+    document.getElementById(
+        "averageOrder"
+    ).textContent="₹"+average;
+
+    document.getElementById(
+        "activeMenuAnalytics"
+    ).textContent=
+        menu.filter(m=>m.stock).length;
+
+
+    /* SIMPLE CHART */
+
+    const days=[];
+
+    for(let i=6;i>=0;i--){
+
+        const d=new Date();
+
+        d.setDate(
+            d.getDate()-i
+        );
+
+        const key=
+            d.toISOString().slice(0,10);
+
+        const count=
+            orders.filter(
+                o=>o.date===key &&
+                o.status!=="Cancelled"
+            ).length;
+
+        days.push({
+            label:d.toLocaleDateString(
+                "en-IN",
+                {weekday:"short"}
+            ),
+            count
+        });
+
+    }
+
+    const max=Math.max(
+        ...days.map(d=>d.count),
+        1
+    );
+
+    document.getElementById(
+        "salesChart"
+    ).innerHTML=days.map(d=>`
+
+        <div class="bar-wrap">
+
+            <div class="bar-value">
+                ${d.count}
+            </div>
+
+            <div
+                class="bar"
+                style="height:${Math.max(
+                    6,
+                    (d.count/max)*190
+                )}px"
+            ></div>
+
+            <div class="bar-label">
+                ${d.label}
+            </div>
+
+        </div>
+
+    `).join("");
+
+
+    /* POPULAR ITEMS */
+
+    const itemCounts={};
+
+    orders.forEach(order=>{
+
+        if(order.status==="Cancelled")
+            return;
+
+        order.items.forEach(item=>{
+
+            itemCounts[item.name]=
+                (itemCounts[item.name]||0)+item.qty;
+
+        });
+
+    });
+
+    let popular=Object.entries(
+        itemCounts
+    )
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,5);
+
+    if(!popular.length){
+
+        popular=menu
+            .slice(0,5)
+            .map(m=>[m.name,0]);
+
+    }
+
+    document.getElementById(
+        "topItems"
+    ).innerHTML=popular.map(
+        (item,index)=>`
+
+        <div class="top-item">
+
+            <div class="rank">
+                ${index+1}
+            </div>
+
+            <div class="top-item-info">
+
+                <b>
+                    ${escapeHTML(item[0])}
+                </b>
+
+                <small>
+                    ${item[1]} ordered
+                </small>
+
+            </div>
+
+            <div class="top-item-price">
+                ${item[1]}
+            </div>
+
+        </div>
+
+    `).join("");
+
+}
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function saveSettings(){
+
+    const settings={
+
+        name:document.getElementById(
+            "settingName"
+        ).value,
+
+        phone:document.getElementById(
+            "settingPhone"
+        ).value,
+
+        altPhone:document.getElementById(
+            "settingAltPhone"
+        ).value,
+
+        address:document.getElementById(
+            "settingAddress"
+        ).value,
+
+        whatsapp:document.getElementById(
+            "settingWhatsapp"
+        ).value,
+
+        orderType:document.getElementById(
+            "settingOrderType"
+        ).value,
+
+        notice:document.getElementById(
+            "settingNotice"
+        ).value
+
+    };
+
+    localStorage.setItem(
+        "katRestaurantSettings",
+        JSON.stringify(settings)
+    );
+
+    toast("Restaurant settings saved ✓");
+
+}
+
+
+/* =========================================================
+   LOAD SETTINGS
+========================================================= */
+
+function loadSettings(){
+
+    const settings=
+        JSON.parse(
+            localStorage.getItem(
+                "katRestaurantSettings"
+            )
+        );
+
+    if(!settings)return;
+
+    if(settings.name)
+        document.getElementById(
+            "settingName"
+        ).value=settings.name;
+
+    if(settings.phone)
+        document.getElementById(
+            "settingPhone"
+        ).value=settings.phone;
+
+    if(settings.altPhone)
+        document.getElementById(
+            "settingAltPhone"
+        ).value=settings.altPhone;
+
+    if(settings.address)
+        document.getElementById(
+            "settingAddress"
+        ).value=settings.address;
+
+    if(settings.whatsapp)
+        document.getElementById(
+            "settingWhatsapp"
+        ).value=settings.whatsapp;
+
+    if(settings.orderType)
+        document.getElementById(
+            "settingOrderType"
+        ).value=settings.orderType;
+
+    if(settings.notice)
+        document.getElementById(
+            "settingNotice"
+        ).value=settings.notice;
+
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+function refreshDashboard(){
+
+    menu=JSON.parse(
+        localStorage.getItem("katAdminMenu")
+    ) || DEFAULT_MENU;
+
+    orders=JSON.parse(
+        localStorage.getItem("katOrders")
+    ) || [];
+
+    renderEverything();
+
+    toast("Dashboard refreshed ✓");
+
+}
+
+
+/* =========================================================
+   EVERYTHING
+========================================================= */
+
+function renderEverything(){
+
+    renderDashboard();
+
+    renderOrders();
+
+    renderAdminMenu();
+
+    renderAnalytics();
+
+    updateNotification();
+
+    loadSettings();
+
+}
+
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+function updateNotification(){
+
+    const pending=orders.filter(
+        o=>o.status==="New"
+    ).length;
+
+    document.getElementById(
+        "notificationDot"
+    ).style.display=
+        pending>0
+        ?"block"
+        :"none";
+
+}
+
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
+
+function openWhatsApp(phone){
+
+    const clean=
+        String(phone||"")
+        .replace(/\D/g,"");
+
+    if(clean.length>=10){
+
+        window.open(
+            `https://wa.me/91${clean.slice(-10)}`,
+            "_blank"
+        );
+
+    }else{
+
+        toast("Invalid customer phone");
+
+    }
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function toast(message){
+
+    const el=document.getElementById(
+        "toast"
+    );
+
+    el.textContent=message;
+
+    el.classList.remove("hidden");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer=setTimeout(()=>{
+
+        el.classList.add("hidden");
+
+    },2300);
+
+}
+
+
+/* =========================================================
+   SECURITY / HTML HELPERS
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+function escapeAttribute(value){
+
+    return escapeHTML(value);
+
+}
+
+
+/* =========================================================
+   DEMO ORDER TEST
+========================================================= */
+
+/*
+   You can use this function from browser console
+   to create a test order.
+
+   Example:
+
+   createDemoOrder();
+
+*/
+
+function createDemoOrder(){
+
+    const items=[
+
+        {
+            name:"Chicken Dum Biryani",
+            qty:2,
+            price:180
+        },
+
+        {
+            name:"Chicken 65",
+            qty:1,
+            price:170
+        }
+
+    ];
+
+    const total=items.reduce(
+        (sum,item)=>
+            sum+(item.price*item.qty),
+        0
+    );
+
+    const now=new Date();
+
+    const order={
+
+        id:String(
+            Math.floor(
+                1000+Math.random()*9000
+            )
+        ),
+
+        customer:"Demo Customer",
+
+        phone:"9876543210",
+
+        items:items,
+
+        total:total,
+
+        status:"New",
+
+        date:now.toISOString().slice(0,10),
+
+        time:now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        ),
+
+        orderType:"Takeaway / Pickup",
+
+        address:"Demo order",
+
+        payment:"Pay at restaurant"
+
+    };
+
+    orders.push(order);
+
+    saveOrders();
+
+    renderEverything();
+
+    toast(
+        "Demo order created ✓"
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE MODALS WHEN CLICKING BACKGROUND
+========================================================= */
+
+document.getElementById(
+    "menuModal"
+).addEventListener("click",function(e){
+
+    if(e.target===this){
+        closeMenuModal();
+    }
+
+});
+
+document.getElementById(
+    "orderModal"
+).addEventListener("click",function(e){
+
+    if(e.target===this){
+        closeOrderModal();
+    }
+
+});
+
+
+</script>
+
+</body>
+</html>
